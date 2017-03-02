@@ -2,6 +2,7 @@ package com.bigmouth.matatuking.data;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -30,7 +31,7 @@ public class Hud {
         FreeTypeFontGenerator.FreeTypeFontParameter param=new FreeTypeFontGenerator.FreeTypeFontParameter();
         param.size=18;
         fpstextfont=ttfgen.generateFont(param);
-        fpstextfont.getData().setScale(0.5f);
+        fpstextfont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         ttfgen.dispose();
         viewport=new FitViewport(V_WIDTH, V_HEIGHT,new OrthographicCamera());
         stage= new Stage(viewport,spriteBatch);

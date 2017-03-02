@@ -69,10 +69,26 @@ public class ComputerHand {
         for(Card c:cardlist){
             if(IsMoveValid(c)){
                 if(localbestcard==null){
+                    if(GameHands.cutterCard!=null&&c!=null){
+                        if(c.suit.equals(GameHands.cutterCard.suit)&&c.number.equals("7")){
+                            if((GetCutCount()-7)>20){
+                                Gdx.app.log("papermatatu","computer cant cut above 20. Cutter count is "+(GetCutCount()-7));
+                                continue;
+                            }
+                        }
+                    }
                     localbestcard=c;
                     continue;
                 }
                 if(c.GetCutCount()>localbestcard.GetCutCount()){
+                    if(GameHands.cutterCard!=null&&c!=null){
+                        if(c.suit.equals(GameHands.cutterCard.suit)&&c.number.equals("7")){
+                            if((GetCutCount()-7)>20){
+                                Gdx.app.log("papermatatu","computer cant cut above 20. Cutter count is "+(GetCutCount()-7));
+                                continue;
+                            }
+                        }
+                    }
                     localbestcard=c;
                     continue;
                 }

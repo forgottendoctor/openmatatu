@@ -35,9 +35,9 @@ import java.util.Random;
 import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
-import aurelienribon.tweenengine.TweenEquations;
 
 public class PlayScreen extends InputAdapter implements Screen{
+
     CommonFunctions m_gamedata;
     private boolean m_tugaabyecards=false;
     private ComputerHand computerHand=new ComputerHand();
@@ -58,11 +58,12 @@ public class PlayScreen extends InputAdapter implements Screen{
     Dialog dialogcomputeraskkamuli;
     Dialog dialogcomputeraskmutima;
     Dialog dialogcomputeraskkitiyo;
+    Dialog dialogmsgbelow20;
     ImageButton humanpickdaibutton;
     ImageButton humanpickkamulibutton;
     ImageButton humanpickmutimabutton;
     ImageButton humanpickkitiyobutton;
-    private Hud hud;
+    //private Hud hud;
     Sprite kalezanyasprite;
     public boolean kalezanyaanimationplaying=false;
     boolean gameisovernonce=false;
@@ -102,6 +103,16 @@ public class PlayScreen extends InputAdapter implements Screen{
 
             }
         });
+        dialogmsgbelow20=new Dialog("",skin){
+            @Override
+            protected void result(Object object) {
+                super.result(object);
+                Gdx.input.setInputProcessor(PlayScreen.this);
+            }
+        };
+        dialogmsgbelow20.getContentTable().add(new Label("You can't cut above 20",skin)).row();
+        dialogmsgbelow20.getContentTable().add(new Label("Reduce your age hehehe",skin));
+        dialogmsgbelow20.button(new TextButton("OK",skin));
         dialoggameover=new Dialog("Game Over",skin){
             @Override
             protected void result(Object object) {
@@ -110,11 +121,11 @@ public class PlayScreen extends InputAdapter implements Screen{
                 ResetGame();
             }
         };
-        dialoggameover.padTop(50f).padBottom(50f);
+        dialoggameover.padTop(20f).padBottom(20f);
         dialoggameover.getContentTable().add(winorloselabel).width(Gdx.graphics.getWidth()/2-60f).row();
         dialoggameover.getContentTable().add(computercutcountlabel).width(Gdx.graphics.getWidth()/2-60f).row();
         dialoggameover.getContentTable().add(humancutcountlabel).width(Gdx.graphics.getWidth()/2-60f).row();
-        dialoggameover.getButtonTable().padTop(50f);
+        //dialoggameover.getButtonTable().padTop(50f);
         dialoggameover.button(restartButton,true);
         dialoggameover.layout();
         dialoggameover.hide();
@@ -178,6 +189,7 @@ public class PlayScreen extends InputAdapter implements Screen{
     }
 
     private void ResetGame() {
+            GameHands.osaabaki="";
             computercutcountlabel.setText("");
             humancutcountlabel.setText("");
             m_tugaabyecards=false;
@@ -203,7 +215,7 @@ public class PlayScreen extends InputAdapter implements Screen{
             for(String s:suitstrings){
                 for(String n:numberstrings){
                     Card c=new Card(s,n,m_gamedata);
-                    c.SetPosition(4,-1);
+                    c.SetPosition(3,-1);
                     GameHands.deck.add(c);
                 }
             }
@@ -225,7 +237,7 @@ public class PlayScreen extends InputAdapter implements Screen{
         for(String s:suitstrings){
             for(String n:numberstrings){
                 Card c=new Card(s,n,gameData);
-                c.SetPosition(4,-1);
+                c.SetPosition(3,-1);
                 GameHands.deck.add(c);
             }
         }
@@ -279,7 +291,7 @@ public class PlayScreen extends InputAdapter implements Screen{
             m_gamedata.spriteBatch.end();
             stage.act(Gdx.graphics.getDeltaTime());
             stage.draw();
-            hud.stage.draw();
+            //hud.stage.draw();
             return;
         }
     }
@@ -294,6 +306,15 @@ public class PlayScreen extends InputAdapter implements Screen{
         for(int i=humanHand.cardlist.size()-1;i>=0;i--){
             Card c=humanHand.cardlist.get(i);
             if(c.frontsprite.getBoundingRectangle().contains(worldcoords.x,worldcoords.y)){
+                if(c.number.equals("7")&&c.suit.equals(GameHands.cutterCard.suit)){
+                    //is a cutter
+                    if((humanHand.GetCutCount()-7)>20){
+                        Gdx.app.log("papermatatu","Sorry Human, Wont cut below 20 . CutCount "+(humanHand.GetCutCount()-7));
+                        dialogmsgbelow20.show(stage);
+                        Gdx.input.setInputProcessor(stage);
+                        return false;
+                    }
+                }
                 chosen=c;
                 Gdx.app.log("papermatatu","Card "+c.suit+c.number+" touched");
                 break;
@@ -321,30 +342,30 @@ public class PlayScreen extends InputAdapter implements Screen{
                         GameHands.waitingforanimationtocomplete = true;//block
                         picked.Show();
                         Tween.to(picked.backsprite, SpriteTweenAccessor.XPOSITION, 1f)
-                                .target(4)
+                                .target(3)
                                 .start(MyGame.tweenManager);
                         Tween.to(picked.backsprite, SpriteTweenAccessor.YPOSITION, 1f)
-                                .target(-4)
+                                .target(-4+.8f)
                                 .start(MyGame.tweenManager);
                         Tween.to(picked.frontsprite, SpriteTweenAccessor.XPOSITION, 1f)
-                                .target(4)
+                                .target(3)
                                 .start(MyGame.tweenManager);
                         Tween.to(picked.frontsprite, SpriteTweenAccessor.YPOSITION, 1f)
-                                .target(-4)
+                                .target(-4+.8f)
                                 .start(MyGame.tweenManager);
                         picked=humanHand.PickForMbwa();
                         picked.Show();
                         Tween.to(picked.backsprite, SpriteTweenAccessor.XPOSITION, 1f)
-                                .target(5)
+                                .target(4)
                                 .start(MyGame.tweenManager);
                         Tween.to(picked.backsprite, SpriteTweenAccessor.YPOSITION, 1f)
-                                .target(-4)
+                                .target(-4+.8f)
                                 .start(MyGame.tweenManager);
                         Tween.to(picked.frontsprite, SpriteTweenAccessor.XPOSITION, 1f)
-                                .target(5)
+                                .target(4)
                                 .start(MyGame.tweenManager);
                         Tween.to(picked.frontsprite, SpriteTweenAccessor.YPOSITION, 1f)
-                                .target(-4)
+                                .target(-4+.8f)
                                 .setCallback(new TweenCallback() {
                                     @Override
                                     public void onEvent(int type, BaseTween<?> source) {
@@ -366,16 +387,16 @@ public class PlayScreen extends InputAdapter implements Screen{
                     GameHands.waitingforanimationtocomplete = true;//block
                     picked.Show();
                     Tween.to(picked.backsprite, SpriteTweenAccessor.XPOSITION, 1f)
-                            .target(4)
+                            .target(3)
                             .start(MyGame.tweenManager);
                     Tween.to(picked.backsprite, SpriteTweenAccessor.YPOSITION, 1f)
-                            .target(-4)
+                            .target(-4+.8f)
                             .start(MyGame.tweenManager);
                     Tween.to(picked.frontsprite, SpriteTweenAccessor.XPOSITION, 1f)
-                            .target(4)
+                            .target(3)
                             .start(MyGame.tweenManager);
                     Tween.to(picked.frontsprite, SpriteTweenAccessor.YPOSITION, 1f)
-                            .target(-4)
+                            .target(-4+.8f)
                             .setCallback(new TweenCallback() {
                                 @Override
                                 public void onEvent(int type, BaseTween<?> source) {
@@ -463,7 +484,7 @@ public class PlayScreen extends InputAdapter implements Screen{
 
     @Override
     public void show() {
-        hud=new Hud(m_gamedata.spriteBatch);
+        //hud=new Hud(m_gamedata.spriteBatch);
         Gdx.input.setInputProcessor(this);
         InitGui();
         kalezanyasprite=m_gamedata.textureAtlasCards.createSprite("arrow");
@@ -495,14 +516,14 @@ public class PlayScreen extends InputAdapter implements Screen{
         drawhands();
         kalezanyasprite.draw(m_gamedata.spriteBatch);
         m_gamedata.spriteBatch.end();
-        hud.label1.setText("Player To Move "+GameHands.playertomove);
-        hud.label2.setText("deck size  "+GameHands.deck.size());
-        hud.label3.setText(Gdx.graphics.getFramesPerSecond()+" fps");
+        //hud.label1.setText("Player To Move "+GameHands.playertomove);
+        //hud.label2.setText("deck size  "+GameHands.deck.size());
+        //hud.label3.setText(Gdx.graphics.getFramesPerSecond()+" fps");
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
         stagecomputer.act();
         stagecomputer.draw();
-        hud.stage.draw();
+        //hud.stage.draw();
     }
 
     void drawhands(){
@@ -524,12 +545,12 @@ public class PlayScreen extends InputAdapter implements Screen{
     @Override
     public void resize(int width, int height) {
         if(width>height){
-            cam.viewportHeight=m_gamedata.MINIMUM_VIEWPORT_SIZE;
+            cam.viewportHeight=m_gamedata.MINIMUM_VIEWPORT_SIZE*.7f;
             cam.viewportWidth=cam.viewportHeight*(float)width/(float)height;
         }
         else {
             cam.viewportWidth=m_gamedata.MINIMUM_VIEWPORT_SIZE;
-            cam.viewportHeight=cam.viewportWidth*(float)height/(float)width;
+            cam.viewportHeight=cam.viewportWidth*(float)height/(float)width*.7f;
         }
         stagecomputer.getViewport().update(width,height,true);
         stage.getViewport().update(width,height,true);
@@ -554,7 +575,7 @@ public class PlayScreen extends InputAdapter implements Screen{
             //gaaba cutter and exit
             GameHands.cutterCard=GameHands.deck.remove(0);
             GameHands.cutterCard.SetRotation(90);
-            GameHands.cutterCard.SetPosition(2.8f,-1);
+            GameHands.cutterCard.SetPosition(2f,-1);
             GameHands.cutterCard.Show();
             m_tugaabyecards=true;//terminate
             //debug
@@ -566,13 +587,13 @@ public class PlayScreen extends InputAdapter implements Screen{
             newcard=GameHands.deck.remove(0);
             computerHand.cardlist.add(newcard);
             Tween.to(newcard.backsprite, SpriteTweenAccessor.XPOSITION,1f)
-                    .target(4)
+                    .target(3)
                     .start(MyGame.tweenManager);
             Tween.to(newcard.backsprite ,SpriteTweenAccessor.YPOSITION,1f)
                     .target(2)
                     .start(MyGame.tweenManager);
             Tween.to(newcard.frontsprite,SpriteTweenAccessor.XPOSITION,1f)
-                    .target(4)
+                    .target(3)
                     .start(MyGame.tweenManager);
             Tween.to(newcard.frontsprite,SpriteTweenAccessor.YPOSITION,1f)
                     .target(2)
@@ -592,16 +613,16 @@ public class PlayScreen extends InputAdapter implements Screen{
             humanHand.cardlist.add(newcard);
             newcard.Show();
             Tween.to(newcard.backsprite,SpriteTweenAccessor.XPOSITION,1f)
-                    .target(4)
+                    .target(3)
                     .start(MyGame.tweenManager);
             Tween.to(newcard.backsprite ,SpriteTweenAccessor.YPOSITION,1f)
-                    .target(-4)
+                    .target(-4+.8f)
                     .start(MyGame.tweenManager);
             Tween.to(newcard.frontsprite,SpriteTweenAccessor.XPOSITION,1f)
-                    .target(4)
+                    .target(3)
                     .start(MyGame.tweenManager);
             Tween.to(newcard.frontsprite,SpriteTweenAccessor.YPOSITION,1f)
-                    .target(-4)
+                    .target(-4+.8f)
                     .setCallback(new TweenCallback() {
                         @Override
                         public void onEvent(int type, BaseTween<?> source) {
@@ -620,7 +641,7 @@ public class PlayScreen extends InputAdapter implements Screen{
         if(size==0)return;//avoid divide by zero
         for(int i=0;i<size;i++){
             Card c=cardlist.get(i);
-            float xval=(i/(float)size)*8f-5f;
+            float xval=(i/(float)size)*8f-4f;
             if(size>8){
                 Tween.to(c.frontsprite,SpriteTweenAccessor.XPOSITION,1f)
                         .target(xval)
@@ -658,19 +679,19 @@ public class PlayScreen extends InputAdapter implements Screen{
         if(size==0)return;//avoid divide by zero
         for(int i=0;i<size;i++){
             Card c=cardlist.get(i);
-            float xval=(i/(float)size)*8f-5f;
+            float xval=(i/(float)size)*8f-4f;
             if(size>8){
                 Tween.to(c.frontsprite,SpriteTweenAccessor.XPOSITION,1f)
                         .target(xval)
                         .start(MyGame.tweenManager);
                 Tween.to(c.frontsprite,SpriteTweenAccessor.YPOSITION,1f)
-                        .target(-4)
+                        .target(-4+.8f)
                         .start(MyGame.tweenManager);
                 Tween.to(c.backsprite,SpriteTweenAccessor.XPOSITION,1f)
                         .target(xval)
                         .start(MyGame.tweenManager);
                 Tween.to(c.backsprite,SpriteTweenAccessor.YPOSITION,1f)
-                        .target(-4)
+                        .target(-4+.8f)
                         .start(MyGame.tweenManager);
                 //c.TweenTo(xval,1f);
             }
@@ -679,13 +700,13 @@ public class PlayScreen extends InputAdapter implements Screen{
                         .target(i-(size/2))
                         .start(MyGame.tweenManager);
                 Tween.to(c.frontsprite,SpriteTweenAccessor.YPOSITION,1f)
-                        .target(-4)
+                        .target(-4+.8f)
                         .start(MyGame.tweenManager);
                 Tween.to(c.backsprite,SpriteTweenAccessor.XPOSITION,1f)
                         .target(i-(size/2))
                         .start(MyGame.tweenManager);
                 Tween.to(c.backsprite,SpriteTweenAccessor.YPOSITION,1f)
-                        .target(-4)
+                        .target(-4+.8f)
                         .start(MyGame.tweenManager);
                 //c.TweenTo(i-(size/2),1f);
             }
@@ -707,7 +728,6 @@ public class PlayScreen extends InputAdapter implements Screen{
                                     }
                                 })
                                 .setCallbackTriggers(TweenCallback.COMPLETE)
-                                .ease(TweenEquations.easeInBounce)
                                 .start(MyGame.tweenManager);
                     }
                 }
@@ -725,7 +745,6 @@ public class PlayScreen extends InputAdapter implements Screen{
                                     }
                                 })
                                 .setCallbackTriggers(TweenCallback.COMPLETE)
-                                .ease(TweenEquations.easeInBounce)
                                 .start(MyGame.tweenManager);
     }
     public void ComputerPlayNow() {
@@ -835,13 +854,13 @@ public class PlayScreen extends InputAdapter implements Screen{
                         GameHands.waitingforanimationtocomplete = true;//block
                         //picked.Show();
                         Tween.to(picked.backsprite, SpriteTweenAccessor.XPOSITION, 1f)
-                                .target(4)
+                                .target(3)
                                 .start(MyGame.tweenManager);
                         Tween.to(picked.backsprite, SpriteTweenAccessor.YPOSITION, 1f)
                                 .target(2)
                                 .start(MyGame.tweenManager);
                         Tween.to(picked.frontsprite, SpriteTweenAccessor.XPOSITION, 1f)
-                                .target(4)
+                                .target(3)
                                 .start(MyGame.tweenManager);
                         Tween.to(picked.frontsprite, SpriteTweenAccessor.YPOSITION, 1f)
                                 .target(2)
@@ -851,13 +870,13 @@ public class PlayScreen extends InputAdapter implements Screen{
                         picked=computerHand.Pick();
                         //picked.Show();
                         Tween.to(picked.backsprite, SpriteTweenAccessor.XPOSITION, 1f)
-                                .target(5)
+                                .target(4)
                                 .start(MyGame.tweenManager);
                         Tween.to(picked.backsprite, SpriteTweenAccessor.YPOSITION, 1f)
                                 .target(2)
                                 .start(MyGame.tweenManager);
                         Tween.to(picked.frontsprite, SpriteTweenAccessor.XPOSITION, 1f)
-                                .target(5)
+                                .target(4)
                                 .start(MyGame.tweenManager);
                         Tween.to(picked.frontsprite, SpriteTweenAccessor.YPOSITION, 1f)
                                 .target(2)
@@ -880,13 +899,13 @@ public class PlayScreen extends InputAdapter implements Screen{
                     GameHands.waitingforanimationtocomplete = true;//block
                     //picked.Show();
                     Tween.to(picked.backsprite, SpriteTweenAccessor.XPOSITION, 1f)
-                            .target(4)
+                            .target(3)
                             .start(MyGame.tweenManager);
                     Tween.to(picked.backsprite, SpriteTweenAccessor.YPOSITION, 1f)
                             .target(2)
                             .start(MyGame.tweenManager);
                     Tween.to(picked.frontsprite, SpriteTweenAccessor.XPOSITION, 1f)
-                            .target(4)
+                            .target(3)
                             .start(MyGame.tweenManager);
                     Tween.to(picked.frontsprite, SpriteTweenAccessor.YPOSITION, 1f)
                             .target(2)

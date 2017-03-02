@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 
 import java.util.ArrayList;
 import java.util.Random;
-
-
 public class HumanHand {
     public boolean bakubanja=false;
     public boolean opikinze=false;
